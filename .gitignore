@@ -50,7 +50,7 @@ temp/
 .env.production
 
 # Don't ignore the template .env file
-!.env
+.env
 
 # Temporary upload files
 temp/*
