@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Invoice Data Extractor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Invoice Data Extractor</h1>
+            <p>Smart extraction from PDFs, Word docs, Excel files, and images using Gemini AI</p>
+            <div class="ai-status" id="ai-status">
+                <span class="status-indicator" id="status-indicator">🔄</span>
+                <span id="status-text">Checking AI status...</span>
+            </div>
+        </div>
+
+        <div class="upload-section">
+            <div class="file-upload">
+                <input type="file" id="files" multiple accept=".pdf,.xlsx,.xls,.docx,.png,.jpg,.jpeg,.gif,.bmp,.tiff,.webp">
+                <label for="files" class="file-label">
+                    <span class="upload-icon">📁</span>
+                    Choose Files
+                    <span class="supported-formats">PDF • Word • Excel • Images</span>
+                </label>
+                <span id="file-count" class="file-count">No files selected</span>
+            </div>
+            
+            <button id="extract-btn" onclick="upload()" disabled class="extract-btn">
+                <span class="btn-icon">🚀</span>
+                Extract with AI
+            </button>
+        </div>
+
+        <div class="progress-section" id="progress-section" style="display: none;">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <span id="progress-text">Processing with AI...</span>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <h2>📊 Extracted Data</h2>
+                <div class="table-controls">
+                    <button onclick="exportData()" id="export-btn" style="display: none;">
+                        📥 Export CSV
+                    </button>
+                    <button onclick="clearResults()" id="clear-btn" style="display: none;">
+                        🗑️ Clear
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table id="result-table">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Item/Service</th>
+                            <th>Amount</th>
+                            <th>Confidence</th>
+                            <th>Source File</th>
+                        </tr>
+                    </thead>
+                    <tbody id="result-tbody">
+                        <tr id="no-data-row">
+                            <td colspan="6" class="no-data">No data extracted yet. Upload files to get started with AI extraction.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="stats-section" id="stats-section" style="display: none;">
+            <div class="stat-card">
+                <div class="stat-number" id="total-files">0</div>
+                <div class="stat-label">Files Processed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-records">0</div>
+                <div class="stat-label">Records Extracted</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="ai-processed">0</div>
+                <div class="stat-label">AI Processed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="success-rate">0%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+        </div>
+
+        <div class="ai-features">
+            <h3>🎯 AI-Enhanced Features</h3>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🖼️</div>
+                    <div class="feature-title">Image Processing</div>
+                    <div class="feature-desc">Extract data from scanned invoices and image files</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-title">Smart Extraction</div>
+                    <div class="feature-desc">AI understands various invoice formats automatically</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">Fast Processing</div>
+                    <div class="feature-desc">Batch process multiple files simultaneously</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">High Accuracy</div>
+                    <div class="feature-desc">Gemini AI provides superior data extraction</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Supported formats: PDF, Word (DOCX), Excel (XLSX/XLS), Images (PNG, JPG, GIF, BMP, TIFF)</p>
+            <p>Powered by Google Gemini AI • Built with FastAPI + Python</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

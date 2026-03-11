@@ -1,0 +1,36 @@
+INVOICE SAMPLE FOR IMAGE TESTING
+
+================================
+        ACME CORPORATION  
+================================
+
+Invoice #: INV-2025-001
+Date: March 10, 2025
+
+Bill To:
+TechStart Solutions Ltd
+456 Innovation Drive
+Silicon Valley, CA 94301
+
+Description of Services:
+- AI Development Consulting: $50,000
+- Cloud Infrastructure Setup: $25,000 
+- Database Design & Implementation: $15,000
+
+Subtotal: $90,000
+Tax (8.5%): $7,650
+Total Amount: $97,650
+
+Payment Terms: Net 30
+Due Date: April 9, 2025
+
+Thank you for your business!
+
+Contact: billing@acmecorp.com
+Phone: (555) 123-4567
+
+================================
+
+This file can be converted to an image (PNG/JPG) to test 
+the Gemini AI vision capabilities for invoice extraction
+from scanned documents or photos.

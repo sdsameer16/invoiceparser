@@ -1,0 +1,29 @@
+Invoice Sample #1
+
+Customer: Reliance Industries Ltd
+Date: 2025-02-10
+Item: High-Performance Laptop Computer
+Total: ₹50,000
+
+---
+
+Invoice Sample #2
+
+Customer: Amazon Web Services
+Date: 2025-02-11
+Item: Cloud Computing Services
+Total: $15,000
+
+---
+
+Invoice Sample #3
+
+Customer: Flipkart E-commerce
+Date: 2025-02-12
+Item: Wireless Mouse Set
+Total: ₹500
+
+---
+
+This is a sample invoice file for testing the Invoice Data Extractor.
+The system should be able to extract customer names, dates, items, and amounts from this text.
