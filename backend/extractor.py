@@ -104,10 +104,24 @@ class InvoiceExtractor:
             return {"customer": "", "date": "", "item": "", "amount": ""}
         
         # Normalize field names and clean data
+        raw_item = data.get("item", "")
+        if isinstance(raw_item, list):
+            # Preserve multiple item names in one display-safe field.
+            item_text = " | ".join(str(v).strip() for v in raw_item if str(v).strip())
+        else:
+            item_text = str(raw_item).strip()
+
+        if not item_text:
+            alt_items = data.get("items", "")
+            if isinstance(alt_items, list):
+                item_text = " | ".join(str(v).strip() for v in alt_items if str(v).strip())
+            elif alt_items:
+                item_text = str(alt_items).strip()
+
         normalized = {
             "customer": str(data.get("customer", "")).strip(),
             "date": str(data.get("date", "")).strip(),
-            "item": str(data.get("item", "")).strip(), 
+            "item": item_text,
             "amount": str(data.get("amount", "")).strip(),
             "confidence": data.get("confidence", "Medium"),
             "invoice_number": data.get("invoice_number", ""),
@@ -179,6 +193,7 @@ class InvoiceExtractor:
             "amount": "",
             "confidence": "Low"
         }
+        item_candidates: List[str] = []
 
         if not text:
             return data
@@ -230,9 +245,26 @@ class InvoiceExtractor:
             
             for pattern in item_patterns:
                 match = re.search(pattern, line_lower)
-                if match and not data["item"]:
-                    data["item"] = match.group(1).strip()
+                if match:
+                    item_value = match.group(1).strip()
+                    if item_value and item_value not in item_candidates:
+                        item_candidates.append(item_value)
                     break
+
+            # Capture table-style invoice line items: "Service Name    2   1200   2400"
+            table_line = re.match(r'^(.+?)\s{2,}\d', line)
+            if table_line:
+                candidate = table_line.group(1).strip(' -:|')
+                candidate_lower = candidate.lower()
+                if (
+                    len(candidate) > 2
+                    and candidate_lower not in {
+                        "item", "items", "description", "service", "product", "qty",
+                        "quantity", "rate", "price", "amount", "total", "subtotal", "tax"
+                    }
+                    and candidate not in item_candidates
+                ):
+                    item_candidates.append(candidate)
 
             # Extract amount information
             amount_patterns = [
@@ -250,6 +282,11 @@ class InvoiceExtractor:
                     if amount_match:
                         data["amount"] = amount_match.group(0)
                     break
+
+        if item_candidates:
+            data["item"] = " | ".join(item_candidates)
+            if data["confidence"] == "Low":
+                data["confidence"] = "Medium"
 
         return data
 

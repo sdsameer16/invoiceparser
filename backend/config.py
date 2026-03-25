@@ -85,7 +85,7 @@ Important guidelines:
 2. Use "N/A" for fields that are not found or unclear
 3. For amount, extract only numbers (e.g., "50000" not "₹50,000")
 4. Be precise and don't make assumptions
-5. If multiple items exist, focus on the main/total amount
+5. If multiple line items/services exist, put all item names in "item" joined by " | "
 6. Ensure JSON format is valid
 
 Document to analyze:
