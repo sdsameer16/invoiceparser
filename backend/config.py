@@ -1,6 +1,13 @@
 import os
-import google.generativeai as genai
 from dotenv import load_dotenv
+
+try:
+  import google.generativeai as genai
+except Exception as e:
+  genai = None
+  _GENAI_IMPORT_ERROR = e
+else:
+  _GENAI_IMPORT_ERROR = None
 
 # Load environment variables from parent directory
 env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
@@ -16,17 +23,28 @@ class GeminiConfig:
         self.max_tokens = int(os.getenv('GEMINI_MAX_TOKENS', '8192'))
         self.enable_ai_parsing = os.getenv('ENABLE_AI_PARSING', 'true').lower() == 'true'
         self.fallback_to_traditional = os.getenv('FALLBACK_TO_TRADITIONAL', 'true').lower() == 'true'
-        
+
+        if genai is None:
+            self.model = None
+            print("⚠️  Gemini SDK import failed. Using traditional parsing only.")
+            print(f"   Import error: {_GENAI_IMPORT_ERROR}")
+            return
+
         # Initialize Gemini if API key is available
         if self.api_key and self.api_key != 'your_gemini_api_key_here':
-            genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel(
-                model_name=self.model_name,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=self.temperature,
-                    max_output_tokens=self.max_tokens,
+            try:
+                genai.configure(api_key=self.api_key)
+                self.model = genai.GenerativeModel(
+                    model_name=self.model_name,
+                    generation_config=genai.types.GenerationConfig(
+                        temperature=self.temperature,
+                        max_output_tokens=self.max_tokens,
+                    )
                 )
-            )
+            except Exception as e:
+                self.model = None
+                print("⚠️  Gemini SDK initialization failed. Using traditional parsing only.")
+                print(f"   Initialization error: {e}")
         else:
             self.model = None
             print("⚠️  Gemini API key not configured. Using traditional parsing only.")
