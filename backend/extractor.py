@@ -58,7 +58,17 @@ class InvoiceExtractor:
             if response and response.text:
                 return response.text.strip()
         except Exception as e:
-            print(f"Gemini API error: {e}")
+            error_text = str(e)
+            print(f"Gemini API error: {error_text}")
+            error_lower = error_text.lower()
+            if (
+                "403" in error_text
+                or "api key" in error_lower
+                or "leaked" in error_lower
+                or "permission" in error_lower
+                or "unauthorized" in error_lower
+            ):
+                self.config.disable_ai(error_text)
             return None
     
     def _extract_json_from_response(self, response: str) -> Optional[str]:

@@ -105,7 +105,7 @@ async function upload() {
         updateProgress(25, 'Uploading files...');
 
         // Send request to backend
-        const response = await fetch("http://127.0.0.1:8000/upload", {
+        const response = await fetch("https://invoiceparser-1.onrender.com/upload", {
             method: "POST",
             body: formData
         });
@@ -358,7 +358,7 @@ container.addEventListener('drop', function(e) {
 async function checkSystemStatus() {
     try {
         // Check main API endpoint
-        const response = await fetch('http://127.0.0.1:8000/');
+        const response = await fetch('https://invoiceparser-1.onrender.com');
         const data = await response.json();
         
         updateAIStatus({

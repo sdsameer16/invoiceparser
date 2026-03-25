@@ -23,6 +23,8 @@ class GeminiConfig:
         self.max_tokens = int(os.getenv('GEMINI_MAX_TOKENS', '8192'))
         self.enable_ai_parsing = os.getenv('ENABLE_AI_PARSING', 'true').lower() == 'true'
         self.fallback_to_traditional = os.getenv('FALLBACK_TO_TRADITIONAL', 'true').lower() == 'true'
+        self.ai_runtime_disabled = False
+        self.ai_runtime_error = None
 
         if genai is None:
             self.model = None
@@ -52,7 +54,14 @@ class GeminiConfig:
     
     def is_available(self) -> bool:
         """Check if Gemini API is properly configured"""
-        return self.model is not None
+        return self.enable_ai_parsing and self.model is not None and not self.ai_runtime_disabled
+
+    def disable_ai(self, reason: str) -> None:
+        """Disable AI at runtime after unrecoverable Gemini errors."""
+        self.ai_runtime_disabled = True
+        self.ai_runtime_error = reason
+        print("⚠️  Gemini AI disabled at runtime. Falling back to traditional parsing.")
+        print(f"   Reason: {reason}")
 
 # Global configuration instance
 config = GeminiConfig()
