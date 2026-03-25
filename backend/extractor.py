@@ -9,7 +9,6 @@ from PIL import Image
 import io
 import base64
 from config import config, INVOICE_EXTRACTION_PROMPT, BATCH_EXTRACTION_PROMPT
-import google.generativeai as genai
 from typing import Dict, List, Optional, Union
 
 
