@@ -1,5 +1,3 @@
 {
-  "buildCommand": "echo 'Frontend only - static files'",
-  "outputDirectory": "frontend",
-  "framework": "static"
+  "outputDirectory": "frontend"
 }
