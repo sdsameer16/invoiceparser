@@ -181,139 +181,59 @@ function processResults(data, stats, detailedResults) {
 }
 
 function displayResultsWithSource(data, detailedResults) {
-    // DEBUG: Log display function inputs  
-    console.log('displayResultsWithSource called with:');
-    console.log('- data length:', data?.length);
-    console.log('- detailedResults length:', detailedResults?.length);
-    console.log('- detailedResults:', detailedResults);
-    
-    // Remove "no data" row if it exists
-    if (noDataRow && noDataRow.parentNode) {
-        console.log('Removing no-data row');
-        noDataRow.remove();
-    }
+    // Always query live DOM — the global noDataRow ref becomes stale after clearTable()
+    document.getElementById('no-data-row')?.remove();
 
-    // Create a map of data to source files
-    let dataIndex = 0;
-    
-    if (detailedResults && detailedResults.length > 0) {
-        console.log('Processing with detailedResults');
-        detailedResults.forEach((fileResult, resultIndex) => {
-            console.log(`Processing result ${resultIndex}:`, fileResult);
-            
-            if (fileResult.status === 'success' && fileResult.data) {
-                const invoice = fileResult.data; // Use fileResult.data directly
-                console.log('Adding row for invoice:', invoice);
-                
-                const row = resultTbody.insertRow();
-                row.className = 'data-row';
-                
-                // Add animation delay for visual effect
-                setTimeout(() => {
-                    row.classList.add('fade-in');
-                }, dataIndex * 100);
+    const addRow = (invoice, source, index) => {
+        const row = resultTbody.insertRow();
+        row.className = 'data-row';
 
-                const customerCell = row.insertCell(0);
-                const dateCell = row.insertCell(1);
-                const itemCell = row.insertCell(2);
-                const amountCell = row.insertCell(3);
-                const confidenceCell = row.insertCell(4);
-                const sourceCell = row.insertCell(5);
+        setTimeout(() => {
+            row.classList.add('fade-in');
+        }, index * 100);
 
-                customerCell.textContent = invoice.customer || 'N/A';
-                dateCell.textContent = invoice.date || 'N/A';
-                itemCell.textContent = invoice.item || 'N/A';
-                
-                // DEBUG: Log amount handling
-                console.log('Processing amount:', {
-                    rawAmount: invoice.amount,
-                    type: typeof invoice.amount,
-                    isEmpty: !invoice.amount,
-                    display: invoice.amount || 'N/A'
-                });
-                
-                // Fix for "0" amounts being treated as falsy
-                amountCell.textContent = invoice.amount !== null && invoice.amount !== undefined && invoice.amount !== '' 
-                    ? invoice.amount 
-                    : 'N/A';
-            
-                // Style confidence level
-                const confidence = invoice.confidence || 'Low';
-                confidenceCell.textContent = confidence;
-                confidenceCell.className = `confidence confidence-${confidence.toLowerCase()}`;
-                
-                sourceCell.textContent = fileResult.filename || 'Unknown';
-                sourceCell.className = 'source-file';
+        const customerCell = row.insertCell(0);
+        const dateCell = row.insertCell(1);
+        const itemCell = row.insertCell(2);
+        const amountCell = row.insertCell(3);
+        const confidenceCell = row.insertCell(4);
+        const sourceCell = row.insertCell(5);
 
-                // Highlight empty cells
-                [customerCell, dateCell, itemCell, amountCell].forEach(cell => {
-                    if (cell.textContent === 'N/A') {
-                        cell.classList.add('empty-cell');
-                    }
-                });
-                
-                dataIndex++;
-            } else {
-                console.log(`Skipping result ${resultIndex}: status=${fileResult.status}, hasData=${!!fileResult.data}`);
+        customerCell.textContent = invoice.customer || 'N/A';
+        dateCell.textContent = invoice.date || 'N/A';
+        itemCell.textContent = invoice.item || 'N/A';
+        amountCell.textContent = invoice.amount !== null && invoice.amount !== undefined && invoice.amount !== ''
+            ? invoice.amount
+            : 'N/A';
+
+        const confidence = invoice.confidence || 'Low';
+        confidenceCell.textContent = confidence;
+        confidenceCell.className = `confidence confidence-${confidence.toLowerCase()}`;
+
+        sourceCell.textContent = source;
+        sourceCell.className = 'source-file';
+
+        [customerCell, dateCell, itemCell, amountCell].forEach(cell => {
+            if (cell.textContent === 'N/A') {
+                cell.classList.add('empty-cell');
             }
         });
-    } else {
-        console.log('No detailedResults, using fallback display for', data.length, 'items');
-        // Fallback for data without detailed results
-            const confidence = invoice.confidence || 'Low';
-            confidenceCell.textContent = confidence;
-            confidenceCell.className = `confidence confidence-${confidence.toLowerCase()}`;
-            
-            sourceCell.textContent = fileResult.filename || 'Unknown';
-            sourceCell.className = 'source-file';
+    };
 
-            // Highlight empty cells
-            [customerCell, dateCell, itemCell, amountCell].forEach(cell => {
-                if (cell.textContent === 'N/A') {
-                    cell.classList.add('empty-cell');
-                }
-            });
-            
-            dataIndex++;
-        }
-    });
+    if (Array.isArray(detailedResults) && detailedResults.length > 0) {
+        let index = 0;
+        detailedResults.forEach(fileResult => {
+            if (fileResult.status === 'success' && fileResult.data) {
+                addRow(fileResult.data, fileResult.filename || 'Unknown', index);
+                index++;
+            }
+        });
+        return;
+    }
 
-    // Fallback for data without detailed results
-    if (!detailedResults && data.length > 0) {
+    if (Array.isArray(data) && data.length > 0) {
         data.forEach((invoice, index) => {
-            const row = resultTbody.insertRow();
-            row.className = 'data-row';
-            
-            setTimeout(() => {
-                row.classList.add('fade-in');
-            }, index * 100);
-
-            const customerCell = row.insertCell(0);
-            const dateCell = row.insertCell(1);
-            const itemCell = row.insertCell(2);
-            const amountCell = row.insertCell(3);
-            const confidenceCell = row.insertCell(4);
-            const sourceCell = row.insertCell(5);
-
-            customerCell.textContent = invoice.customer || 'N/A';
-            dateCell.textContent = invoice.date || 'N/A';
-            itemCell.textContent = invoice.item || 'N/A';
-            // Fix for "0" amounts being treated as falsy  
-            amountCell.textContent = invoice.amount !== null && invoice.amount !== undefined && invoice.amount !== '' 
-                ? invoice.amount 
-                : 'N/A';
-            
-            const confidence = invoice.confidence || 'Low';
-            confidenceCell.textContent = confidence;
-            confidenceCell.className = `confidence confidence-${confidence.toLowerCase()}`;
-            
-            sourceCell.textContent = 'File ' + (index + 1);
-
-            [customerCell, dateCell, itemCell, amountCell].forEach(cell => {
-                if (cell.textContent === 'N/A') {
-                    cell.classList.add('empty-cell');
-                }
-            });
+            addRow(invoice, 'File ' + (index + 1), index);
         });
     }
 }
@@ -363,7 +283,10 @@ function clearTable() {
     // Remove all existing data rows
     const dataRows = resultTbody.querySelectorAll('.data-row');
     dataRows.forEach(row => row.remove());
-    
+
+    // Remove existing no-data row before re-adding (prevents duplicates)
+    document.getElementById('no-data-row')?.remove();
+
     // Add "no data" row back
     const noDataRow = resultTbody.insertRow();
     noDataRow.id = 'no-data-row';

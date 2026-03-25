@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: invoice-parser-backend
+    runtime: python
+    pythonVersion: 3.11
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GEMINI_API_KEY
+        scope: build,runtime
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash-exp
+      - key: GEMINI_TEMPERATURE
+        value: "0.1"
+      - key: GEMINI_MAX_TOKENS
+        value: "8192"
+      - key: ENABLE_AI_PARSING
+        value: "true"
+      - key: FALLBACK_TO_TRADITIONAL
+        value: "true"
